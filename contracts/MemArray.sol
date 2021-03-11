@@ -19,10 +19,6 @@ contract MemArray {
 		return bytesToUint256(arr, 0, wordSize); // from, to
 	} 
 
-	function getIdx(byte[] memory arr) private returns(uint256) {
-		return bytesToUint256(arr, wordSize, 2*wordSize); // from, to
-	}
-
 	function copy(byte[] memory to, byte[] memory from) private {
  		uint256 sizeFrom = from.length; // total allocated
 		for (uint256 i = 0; i < sizeFrom; i++) {
@@ -41,10 +37,14 @@ contract MemArray {
 		return new byte[](targetLen);	
 	}
 
-	function setLength(byte[] memory arr, uint256 length) private {
-		for (uint256 i = 0; i < wordSize; i++) {
-			arr[i] = byte(bytes32(length >> (byteSize * i))[0]);
+	function Uint256IntoArr(byte[] memory arr, uint256 from, uint256 to, uint256 value) private {
+		for (uint256 i = from; i < to; i++) {
+			arr[i] = byte(bytes32(value >> (byteSize * i))[0]);
 		}	
+	}
+
+	function setLength(byte[] memory arr, uint256 length) private {
+		return Uint256IntoArr(arr, 0, wordSize, length); // from, to
 	}
 
 	function push(byte[] memory arr, byte value) internal {
@@ -52,16 +52,31 @@ contract MemArray {
 		if (sizeArr < wordSize) {
 			arr = allocate(pow2(7)); 
 			// enough for `length`, `idx` data words and initial 64 bytes
-			setLength(arr, 64);
 		}
 		uint256 lenArr = getArrayLength(arr);
 		if (lenArr == (sizeArr - dataSize)) { // there is no room!
 			byte[] memory newArr = allocate(2*sizeArr);	
 			copy(newArr, arr);
 			arr = newArr;
-		}
-		uint256 idx = getIdx(arr);
-		idx++;
+		} // now there is room
+	        uint256 idx = lenArr+dataSize;
 		arr[idx] = value;
+		lenArr++;
+		setLength(arr, lenArr);
   	}
+
+	function pop(byte[] memory arr) internal returns(byte, bool) {
+		bool ok = true;
+		byte ret;
+		uint256 lenArr = getArrayLength(arr);
+		if (lenArr == 0) {
+			return (ret, !ok);		
+		} 
+		uint256 idx = lenArr-1;
+		ret = arr[idx];
+		arr[idx] = byte(0x00); // delete
+		lenArr--;
+		setLength(arr, lenArr);
+		return (ret, ok);
+	}
 }
