@@ -56,7 +56,7 @@ contract MemArray {
 		}
 		uint256 lenArr = getArrayLength(arr);
 		if (lenArr == (sizeArr - dataSize)) { // there is no room!
-			newArr = allocate(2*sizeArr);	
+			byte[] memory newArr = allocate(2*sizeArr);	
 			copy(newArr, arr);
 			arr = newArr;
 		}
