@@ -7,19 +7,19 @@ contract MemArray {
 	uint256 constant private wordSize = 32;
 	uint256 constant private dataSize = 32; // 32 `length`
 
-	function bytesToUint256(byte[] memory arr, uint256 from, uint256 to) private returns(uint256) {
+	function bytesToUint256(byte[] memory arr, uint256 from, uint256 to) private pure returns(uint256) {
 		uint256 ret;
-		for (uint256 i = 0; i < wordSize; i++) {
-			ret |= uint256(bytes32(arr[i])) << (byteSize * i); // TODO FIXME	
+		for (uint256 i = from; i < to; i++) {
+			ret |= uint256(bytes32(arr[i])) << (byteSize * i);
 		}	
 		return ret;
 	}
 
- 	function getArrayLength(byte[] memory arr) private returns(uint256) {
+ 	function getArrayLength(byte[] memory arr) private pure returns(uint256) {
 		return bytesToUint256(arr, 0, wordSize); // from, to
 	} 
 
-	function copy(byte[] memory dst, byte[] memory src) private returns(byte[] memory) {
+	function copy(byte[] memory dst, byte[] memory src) private pure returns(byte[] memory) {
  		uint256 sizeSrc = src.length; // total allocated
 		for (uint256 i = 0; i < sizeSrc; i++) {
 			dst[i] = src[i];
@@ -34,18 +34,18 @@ contract MemArray {
 		return 2 * pow2(exp - 1);
 	}
 
-	function allocate(uint256 targetLen) private returns(byte[] memory){
+	function allocate(uint256 targetLen) private pure returns(byte[] memory){
 		return new byte[](targetLen);	
 	}
 
-	function Uint256IntoArr(byte[] memory arr, uint256 from, uint256 to, uint256 value) private returns(byte[] memory) {
+	function Uint256IntoArr(byte[] memory arr, uint256 from, uint256 to, uint256 value) private pure returns(byte[] memory) {
 		for (uint256 i = from; i < to; i++) {
-			arr[i] = byte(bytes32(value >> (byteSize * i))[0]); // TODO FIXME
+			arr[i] = byte(bytes32(value >> (byteSize * i))[31]); // endianness :( 
 		}	
 		return arr;
 	}
 
-	function setLength(byte[] memory arr, uint256 length) private returns(byte[] memory) {
+	function setLength(byte[] memory arr, uint256 length) private pure returns(byte[] memory) {
 		return Uint256IntoArr(arr, 0, wordSize, length); // from, to
 	}
 
@@ -64,11 +64,11 @@ contract MemArray {
 	        uint256 idx = lenArr+dataSize;
 		arr[idx] = value;
 		lenArr++;
-		setLength(arr, lenArr);
+		arr = setLength(arr, lenArr);
 		return arr;
   	}
 
-	function pop(byte[] memory arr) internal returns(byte, bool) {
+	function pop(byte[] memory arr) internal pure returns(byte, bool) {
 		bool ok = true;
 		byte ret;
 		uint256 lenArr = getArrayLength(arr);
