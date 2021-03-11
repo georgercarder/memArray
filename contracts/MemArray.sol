@@ -71,6 +71,17 @@ contract MemArray {
 		return arr;
   	}
 
+	// private unchecked
+	function _at(byte[] memory arr, uint256 idx) private pure returns(byte) {
+		return arr[idx+dataSize];	
+	}
+
+	// private unchecked
+	function _delete(byte[] memory arr, uint256 idx) private pure returns(byte[] memory) {
+		arr[idx+dataSize] = byte(0x00); // delete
+		return arr;
+	}
+
 	function pop(byte[] memory arr) internal pure returns(byte[] memory, byte, bool) {
 		bool ok = true;
 		byte ret;
@@ -79,9 +90,8 @@ contract MemArray {
 			return (arr, ret, !ok);		
 		} 
 		uint256 idx = lenArr-1;
-		require(idx ==1, "IDX ERROR");
-		ret = arr[idx+dataSize];
-		arr[idx+dataSize] = byte(0x00); // delete
+		ret = _at(arr, idx);
+		arr = _delete(arr, idx);
 		lenArr--;
 		arr = setLength(arr, lenArr);
 		return (arr, ret, ok);
