@@ -71,18 +71,19 @@ contract MemArray {
 		return arr;
   	}
 
-	function pop(byte[] memory arr) internal pure returns(byte, bool) {
+	function pop(byte[] memory arr) internal pure returns(byte[] memory, byte, bool) {
 		bool ok = true;
 		byte ret;
 		uint256 lenArr = getArrayLength(arr);
 		if (lenArr == 0) {
-			return (ret, !ok);		
+			return (arr, ret, !ok);		
 		} 
 		uint256 idx = lenArr-1;
-		ret = arr[idx];
-		arr[idx] = byte(0x00); // delete
+		require(idx ==1, "IDX ERROR");
+		ret = arr[idx+dataSize];
+		arr[idx+dataSize] = byte(0x00); // delete
 		lenArr--;
-		setLength(arr, lenArr);
-		return (ret, ok);
+		arr = setLength(arr, lenArr);
+		return (arr, ret, ok);
 	}
 }
