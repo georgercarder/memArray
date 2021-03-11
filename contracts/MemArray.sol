@@ -19,10 +19,10 @@ contract MemArray {
 		return bytesToUint256(arr, 0, wordSize); // from, to
 	} 
 
-	function copy(byte[] memory to, byte[] memory from) private {
- 		uint256 sizeFrom = from.length; // total allocated
-		for (uint256 i = 0; i < sizeFrom; i++) {
-			to[i] = from[i];
+	function copy(byte[] memory dst, byte[] memory src) private {
+ 		uint256 sizeSrc = src.length; // total allocated
+		for (uint256 i = 0; i < sizeSrc; i++) {
+			dst[i] = src[i];
 		}
 	}
 
