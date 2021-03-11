@@ -5,7 +5,7 @@ contract MemArray {
 
 	uint256 constant private byteSize = 8;
 	uint256 constant private wordSize = 32;
-	uint256 constant private dataSize = 64; // 2 * 32 `length`, `idx`
+	uint256 constant private dataSize = 32; // 32 `length`
 
 	function bytesToUint256(byte[] memory arr, uint256 from, uint256 to) private returns(uint256) {
 		uint256 ret;
@@ -50,8 +50,8 @@ contract MemArray {
 	function push(byte[] memory arr, byte value) internal {
  		uint256 sizeArr = arr.length; // total allocated
 		if (sizeArr < wordSize) {
-			arr = allocate(pow2(7)); 
-			// enough for `length`, `idx` data words and initial 64 bytes
+			arr = allocate(pow2(6)); 
+			// enough for `length` data word and initial 32 bytes
 		}
 		uint256 lenArr = getArrayLength(arr);
 		if (lenArr == (sizeArr - dataSize)) { // there is no room!
