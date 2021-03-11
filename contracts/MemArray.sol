@@ -9,9 +9,10 @@ contract MemArray {
 
 	function bytesToUint256(byte[] memory arr, uint256 from, uint256 to) private pure returns(uint256) {
 		uint256 ret;
+		uint256 range = to - from;
 		for (uint256 i = from; i < to; i++) {
-			ret |= uint256(bytes32(arr[i])) << (byteSize * i);
-		}	
+			ret |= uint256(bytes32(arr[i])) >> (byteSize * (range-(i-from)-1)); // endianness :(
+		}
 		return ret;
 	}
 
@@ -39,8 +40,10 @@ contract MemArray {
 	}
 
 	function Uint256IntoArr(byte[] memory arr, uint256 from, uint256 to, uint256 value) private pure returns(byte[] memory) {
+		bytes32 bValue = bytes32(value);
+		uint256 range = to - from;
 		for (uint256 i = from; i < to; i++) {
-			arr[i] = byte(bytes32(value >> (byteSize * i))[31]); // endianness :( 
+			arr[i] = bValue[range-(i-from)-1];  // endianness
 		}	
 		return arr;
 	}
@@ -56,7 +59,7 @@ contract MemArray {
 			// enough for `length` data word and initial 32 bytes
 		}
 		uint256 lenArr = getArrayLength(arr);
-		if (lenArr == (sizeArr - dataSize)) { // there is no room!
+		if (lenArr >= (sizeArr - dataSize)) { // there is no room!
 			byte[] memory newArr = allocate(2*sizeArr);	
 			newArr = copy(newArr, arr);
 			arr = newArr;

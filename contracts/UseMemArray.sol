@@ -7,6 +7,7 @@ import "./MemArray.sol";
 
 contract UseMemArray is MemArray {
 	//using MemArray for uint256;
+	byte public wall;
 
   constructor() {
   }
@@ -14,9 +15,12 @@ contract UseMemArray is MemArray {
   function demo() external {
   	byte[] memory arr;
 	arr = push(arr, byte(0x01));
+	wall = arr[0];
 	arr = push(arr, byte(0x22));
 
-	(byte p, bool ok) = pop(arr);
+	wall = arr[0];
+
+	/*(byte p, bool ok) = pop(arr);
 	require(ok, "should be ok!!");
 	if (ok) {
 		require(p == byte(0x22), "byte should equal (1)");	
