@@ -10,7 +10,7 @@ contract MemArray {
 	function bytesToUint256(byte[] memory arr, uint256 from, uint256 to) private returns(uint256) {
 		uint256 ret;
 		for (uint256 i = 0; i < wordSize; i++) {
-			ret |= uint256(bytes32(arr[i])) << (byteSize * i);	
+			ret |= uint256(bytes32(arr[i])) << (byteSize * i); // TODO FIXME	
 		}	
 		return ret;
 	}
@@ -39,7 +39,7 @@ contract MemArray {
 
 	function Uint256IntoArr(byte[] memory arr, uint256 from, uint256 to, uint256 value) private {
 		for (uint256 i = from; i < to; i++) {
-			arr[i] = byte(bytes32(value >> (byteSize * i))[0]);
+			arr[i] = byte(bytes32(value >> (byteSize * i))[0]); // TODO FIXME
 		}	
 	}
 
@@ -47,7 +47,7 @@ contract MemArray {
 		return Uint256IntoArr(arr, 0, wordSize, length); // from, to
 	}
 
-	function push(byte[] memory arr, byte value) internal {
+	function push(byte[] memory arr, byte value) internal returns(byte[] memory) {
  		uint256 sizeArr = arr.length; // total allocated
 		if (sizeArr < wordSize) {
 			arr = allocate(pow2(6)); 
@@ -63,6 +63,7 @@ contract MemArray {
 		arr[idx] = value;
 		lenArr++;
 		setLength(arr, lenArr);
+		return arr;
   	}
 
 	function pop(byte[] memory arr) internal returns(byte, bool) {
